@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☁️ DREAM_OS v2000 ☁️</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 梦核配色板 */
+            --dream-pink: #ffb7b2;
+            --dream-purple: #c7ceea;
+            --dream-blue: #a2e8dd;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --pixel-text: #4a4e69;
+            --win-highlight: #ffffff;
+            --win-shadow: #8892b0;
+        }
+
+        * { box-sizing: border-box; user-select: none; -webkit-font-smoothing: none; }
+
+        body {
+            margin: 0; padding: 20px;
+            font-family: 'VT323', 'ZCOOL QingKe HuangYou', monospace;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; gap: 35px;
+            color: var(--pixel-text);
+            /* 动态梦核背景 */
+            background: linear-gradient(135deg, #9adfff 0%, #cff1fe 50%, #8cc9d1 100%);
+            background-size: 400% 400%;
+            animation: dreamFlow 15s ease infinite;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 背景动画：流动色彩 */
+        @keyframes dreamFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 装饰：复古网格地面 */
+        body::after {
+            content: ""; position: fixed; bottom: 0; left: 0; width: 100%; height: 50vh;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: bottom;
+            pointer-events: none; z-index: -1;
+            mask-image: linear-gradient(to bottom, transparent, black);
+        }
+
+        /* 屏幕扫描线滤镜 */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05));
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 999;
+        }
+
+        /* --- 通用玻璃面板样式 (Glassmorphism + Pixel) --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid var(--glass-border);
+            /* 经典的 Windows 98 凸起边框效果，但是是透明的 */
+            box-shadow: 
+                inset 2px 2px 0px rgba(255,255,255,0.8),
+                inset -2px -2px 0px rgba(0,0,0,0.1),
+                5px 5px 0px rgba(0,0,0,0.15); 
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 1. MP3 Player */
+        .mp3-player {
+            width: 100%; max-width: 380px;
+            margin-top: 20px;
+        }
+
+        .window-bar {
+            background: linear-gradient(90deg, var(--dream-pink), var(--dream-purple));
+            height: 24px; margin: -15px -15px 15px -15px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 8px; border-radius: 8px 8px 0 0;
+            color: #fff; font-size: 1rem; letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .screen-container {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px inset var(--win-shadow);
+            border-radius: 4px;
+            padding: 10px; height: 240px;
+            display: flex; flex-direction: column;
+            position: relative;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .screen-header {
+            display: flex; justify-content: space-between; 
+            font-size: 0.9rem; color: #666; border-bottom: 1px dashed #ccc; padding-bottom: 5px;
+        }
+
+        /* 全息 CD 光盘 */
+        .visualizer { flex-grow: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .cd-disk {
+            width: 90px; height: 90px;
+            background: conic-gradient(from 0deg, #d2e2ff, #9fa1fc, #a1c4fd, #c2e9fb, #ffecd2);
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex; justify-content: center; align-items: center;
+            position: relative;
+        }
+        .cd-disk::before { /* CD内圈 */
+            content: ""; width: 30px; height: 30px; background: rgba(255,255,255,0.9); border-radius: 50%; border: 1px solid #ccc;
+        }
+        .playing .cd-disk { animation: spin 3s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .song-inputs { display: flex; flex-direction: column; gap: 6px; z-index: 2; margin-top: 10px;}
+        .song-input { 
+            background: rgba(255,255,255,0.6); 
+            border: 1px solid #fff; border-radius: 4px;
+            font-family: inherit; font-size: 1rem; color: var(--pixel-text); 
+            outline: none; padding: 4px 8px; box-shadow: inset 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* 播放按钮 - 像素爱心 */
+        .controls { display: flex; justify-content: center; margin-top: 15px; }
+        .play-btn {
+            width: 50px; height: 50px; 
+            background: #fff; border: 2px solid var(--pixel-text);
+            box-shadow: 3px 3px 0 var(--pixel-text);
+            border-radius: 50%;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; 
+            font-size: 20px; transition: transform 0.1s;
+        }
+        .play-btn:active { transform: translate(3px, 3px); box-shadow: none; }
+
+        /* 2. Quest Log */
+        .quest-log { width: 100%; max-width: 480px; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        .quest-input { 
+            flex-grow: 1; background: #fff; border: 2px solid var(--dream-purple); 
+            padding: 5px 10px; font-family: inherit; border-radius: 5px; outline: none;
+        }
+        .pixel-btn {
+            background: linear-gradient(to bottom, #fff, #f0f0f0);
+            border: 1px solid #ccc; border-bottom: 2px solid #aaa; border-right: 2px solid #aaa;
+            padding: 5px 15px; font-family: inherit; cursor: pointer; border-radius: 4px;
+            font-weight: bold; color: var(--pixel-text);
+        }
+        .pixel-btn:active { border: 1px solid #aaa; transform: translate(1px, 1px); }
+
+        .task-list { list-style: none; padding: 0; margin: 0; }
+        .task-item { 
+            display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 6px;
+            background: rgba(255,255,255,0.5); border-radius: 8px; border: 1px solid #fff;
+            cursor: pointer; transition: 0.2s;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.8); transform: scale(1.02); }
+        .task-checkbox { 
+            width: 20px; height: 20px; border: 2px solid var(--dream-purple); background: #fff;
+            position: relative; border-radius: 4px;
+        }
+        .task-item.completed .task-checkbox { background: var(--dream-pink); border-color: var(--dream-pink); }
+        .task-item.completed .task-checkbox::after {
+            content: "♥"; position: absolute; top: -4px; left: 2px; color: #fff; font-size: 16px;
+        }
+        .task-item.completed span { text-decoration: line-through; color: #aaa; }
+
+        /* 3. Inventory */
+        .inventory { width: 100%; max-width: 550px; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
+        
+        /* 贴纸/纸条样式 */
+        .paper-slip {
+            background: #fff; 
+            border: 1px solid #eee;
+            padding: 10px; font-size: 0.9rem;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.05); 
+            transform: rotate(-2deg); transition: 0.2s;
+            border-top: 8px solid rgba(255, 183, 178, 0.5); /* 胶带效果 */
+            min-height: 90px;
+        }
+        .paper-slip:hover { transform: scale(1.05) rotate(0deg); z-index: 10; box-shadow: 5px 5px 15px rgba(0,0,0,0.1); }
+
+        /* 图片相框样式 */
+        .upload-slot {
+            height: 110px; background: #fff;
+            border: 3px solid #fff; outline: 1px dashed var(--dream-purple);
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; overflow: hidden; border-radius: 4px;
+        }
+        .upload-slot img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+
+        #imgInput { display: none; }
+
+        /* 手机适配 */
+        @media (max-width: 600px) { 
+            body { padding: 15px; gap: 20px; } 
+            .inventory-grid { grid-template-columns: repeat(2, 1fr); }
+            /* 手机上隐藏太复杂的背景网格以提升性能 */
+            body::after { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <!-- 🎵 音乐设置 (网易云 ID 填这里) -->
+    <!-- 默认预设：米津玄师——Lemon () -->
+    <audio id="bgm" src="https://music.youtube.com/watch?v=SX_ViT4Ra7k&list=OLAK5uy_lESzkkwhLTfS4mkkHolpltJnwKT5THEdc" loop></audio>
+
+    <!-- 1. 梦境播放器 -->
+    <div class="glass-panel mp3-player" id="player">
+        <div class="window-bar">
+            <span>♫ WINAMP_DREAM.exe</span>
+            <span>_ □ X</span>
+        </div>
+        
+        <div class="screen-container">
+            <div class="screen-header">
+                <span class="status-text">WAITING...</span>
+                <span class="date-display" id="currentDate">2000-01-01</span>
+            </div>
+            
+            <div class="visualizer">
+                <!-- 全息 CD -->
+                <div class="cd-disk"></div>
+            </div>
+
+            <div class="song-inputs">
+                <input type="text" class="song-input" value="1. 米津玄师——Lemon" readonly>
+                <input type="text" class="song-input" value="2. Mili - Ephemeral" readonly>
+                <input type="text" class="song-input" placeholder="3. (Click Play below)" readonly>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="play-btn" onclick="togglePlay()">♥</button>
+        </div>
+    </div>
+
+    <!-- 2. 每日任务 -->
+    <div class="glass-panel quest-log">
+        <div class="window-bar" style="background: linear-gradient(90deg, #a18cd1, #fbc2eb);">
+            <span>★ DAILY_QUESTS</span>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" class="quest-input" id="questInput" placeholder="New Mission...">
+            <button class="pixel-btn" onclick="addTaskManual()">POST</button>
+        </div>
+        <ul class="task-list" id="taskList"></ul>
+    </div>
+
+    <!-- 3. 收藏夹 -->
+    <div class="glass-panel inventory">
+        <div class="window-bar" style="background: linear-gradient(90deg, #84fab0, #8fd3f4);">
+            <span>✿ BAG (Items)</span>
+        </div>
+        
+        <div class="add-buttons" style="margin-bottom:15px; display:flex; gap:10px;">
+            <button class="pixel-btn" onclick="addNote()">+ Memo</button>
+            <button class="pixel-btn" onclick="document.getElementById('imgInput').click()">+ Photo</button>
+            <input type="file" id="imgInput" accept="image/*" onchange="handleImage(this)">
+        </div>
+
+        <div class="inventory-grid" id="inventoryGrid">
+            <div class="paper-slip">"Reality is just a collective dream."</div>
+        </div>
+    </div>
+
+    <script>
+        /* --- 📅 日期与时间 --- */
+        function updateDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            // 复古格式
+            document.getElementById('currentDate').innerText = `${year}/${month}/${day}`;
+        }
+        setInterval(updateDate, 60000); // 每分钟更新
+        updateDate();
+
+        /* --- 🎵 播放器逻辑 --- */
+        let isPlaying = false;
+        const audio = document.getElementById('bgm');
+        const player = document.getElementById('player');
+        const btn = document.querySelector('.play-btn');
+        const statusText = document.querySelector('.status-text');
+
+        function togglePlay() {
+            if (!isPlaying) {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        isPlaying = true;
+                        player.classList.add('playing');
+                        btn.innerHTML = "❚❚"; // 暂停图标
+                        statusText.innerText = "NOW PLAYING ♫";
+                        statusText.style.color = "#ff6b6b";
+                        statusText.style.animation = "blink 1.5s infinite";
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("播放错误 (Error 404):\n请检查歌曲 ID 是否正确，或网络是否通畅。");
+                    });
+                }
+            } else {
+                audio.pause();
+                isPlaying = false;
+                player.classList.remove('playing');
+                btn.innerHTML = "♥"; // 恢复爱心
+                statusText.innerText = "PAUSED";
+                statusText.style.color = "#666";
+                statusText.style.animation = "none";
+            }
+        }
+
+        /* --- ✅ 每日任务逻辑 --- */
+        window.onload = function() {
+            updateDate();
+            checkDailyQuest();
+        };
+
+        function checkDailyQuest() {
+            const today = new Date().toDateString();
+            const lastLogin = localStorage.getItem('lastLoginDate_v2'); // 升级了key防止混淆
+            const taskList = document.getElementById('taskList');
+            const dailyTasks = ["✨ 今天也要开心", "🍱 好好吃饭", "💧 记得喝水"];
+
+            if (today !== lastLogin || taskList.children.length === 0) {
+                taskList.innerHTML = '';
+                dailyTasks.forEach(text => addTaskToDom(text));
+                localStorage.setItem('lastLoginDate_v2', today);
+            }
+        }
+
+        function addTaskToDom(text) {
+            const ul = document.getElementById('taskList');
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            li.onclick = function() { this.classList.toggle('completed'); };
+            li.innerHTML = `<div class="task-checkbox"></div><span>${text}</span>`;
+            ul.appendChild(li);
+        }
+
+        function addTaskManual() {
+            const input = document.getElementById('questInput');
+            if (input.value.trim()) {
+                addTaskToDom(input.value.trim());
+                input.value = '';
+            }
+        }
+
+        /* --- 🖼️ 收藏夹逻辑 --- */
+        function addNote() {
+            const text = prompt("Create new memory fragment:");
+            if (text) {
+                const div = document.createElement('div');
+                div.className = 'paper-slip';
+                div.innerText = text;
+                div.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
+                document.getElementById('inventoryGrid').appendChild(div);
+            }
+        }
+
+        function handleImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'upload-slot';
+                    div.innerHTML = `<img src="${e.target.result}">`;
+                    div.onclick = () => {
+                        const w = window.open("");
+                        w.document.write(`<body style='background:#fecfef; display:flex; justify-content:center; align-items:center; height:100vh;'><img src="${e.target.result}" style="max-width:90%; border:10px solid #fff; box-shadow:0 0 20px rgba(0,0,0,0.1);"></body>`);
+                    };
+                    document.getElementById('inventoryGrid').appendChild(div);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>
